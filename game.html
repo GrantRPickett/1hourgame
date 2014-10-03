@@ -1,0 +1,137 @@
+<html>
+    <head>
+        <title>My first game</title>
+    </head>
+    <body>
+        <canvas id="canvas" style="border:1px solid #000000;"></canvas>
+        <script type="text/javascript">
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		canvas.width = 800;
+		canvas.height = 600;
+		var mySprite = {
+			x: 400,
+			y: 400,
+			r: 15,
+			width: 50,
+			height: 50,
+			speed: 200,
+			color: '#c00'
+		};
+		var keysDown = {};
+		window.addEventListener('keydown', function(e) {
+			keysDown[e.keyCode] = true;
+		});
+		window.addEventListener('keyup', function(e) {
+			delete keysDown[e.keyCode];
+		});
+
+		function update(mod) {
+			if (37 in keysDown) {
+			 if(mySprite.x>0)
+				mySprite.x -= mySprite.speed * mod;
+			}
+			if (38 in keysDown) {
+			  if(mySprite.y>0)
+				mySprite.y -= mySprite.speed * mod;
+			}
+			if (39 in keysDown) {
+			   if(mySprite.x<750)
+   				mySprite.x += mySprite.speed * mod;
+			}
+			if (40 in keysDown) {
+			  if(mySprite.y<550)
+				mySprite.y += mySprite.speed * mod;
+			}
+		}
+		function run() {
+			update((Date.now() - time) / 1000);
+			time = Date.now();
+		}
+		var time = Date.now();
+		setInterval(run, 10);
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var cw = canvas.width;
+var ch = canvas.height;
+
+var circles = [];
+for (var i = 0; i < 10; i++) {
+    newCircle();
+}
+drawAll();
+var continueAnimating = true;
+var lastTime = performance.now();
+requestAnimationFrame(animate);
+
+function newCircle() {
+    var r = 10 + Math.random() * 15;
+    var x = - Math.random() * (cw) + 100;
+    var y = - Math.random() * (ch);
+    circles.push({
+        x: x,
+        y: y,
+        radius: r,
+        color: randomColor()
+    });
+
+}
+
+
+function animate(time) {
+    if (continueAnimating) {
+        requestAnimationFrame(animate);
+    }
+    var elapsed = time - lastTime;
+    lastTime = time;
+    var i = circles.length;
+    while (--i >= 0) {
+        var circle = circles[i];
+        circle.countdown -= elapsed;
+        if (circle.x > cw || circle.y> ch) {
+            circles.splice(i, 1);
+            newCircle();
+        }
+    }
+    drawAll();
+    var num = document.getElementById("val").innerHTML;
+    num = num-0 + 1;
+    document.getElementById("val").innerHTML = num;
+}
+function drawAll() {
+    ctx.clearRect(0, 0, cw, ch);
+    for (var i = 0; i < circles.length; i++) {
+        var circle = circles[i];
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, circle.radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fillStyle = circle.color;
+        ctx.fill();
+        circle.x+= 5;
+        circle.y+= 5;
+    }
+    ctx.fillStyle = "red";
+    ctx.fillRect(mySprite.x, mySprite.y, mySprite.width, mySprite.height);
+        var hit = 0;
+        for (var i = 0; i < circles.length; i++) {
+            var circle = circles[i];
+            var dx = mySprite.x+(mySprite.width/2) - circle.x;
+            var dy = mySprite.y+(mySprite.height/2) - circle.y;
+            var rr = mySprite.r + circle.radius;
+            if (dx * dx + dy * dy < rr * rr) {
+                hit++;
+            }
+        }
+        if (hit != 0) {
+            mySprite.width = 0;
+            mySprite.height = 0;
+            continueAnimating = false;
+        }
+}
+function randomColor() {
+    return ('#' + Math.floor(Math.random() * 16777215).toString(16));
+}
+	</script>
+        <label id="score">Score: </label><label id="val">0</label>
+    </body>
+</html>
